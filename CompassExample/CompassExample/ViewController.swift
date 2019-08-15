@@ -11,7 +11,7 @@ import UIKit
 class ViewController: UIViewController {
 
     
-    /// 开启指南针按钮
+    /// Turn on the compass button
     ///
     /// - Parameter sender: UIButton
     @IBAction func openCompassBtn(_ sender: UIButton) {

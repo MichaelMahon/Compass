@@ -8,46 +8,46 @@
 
 import UIKit
 
-/// 屏幕高度
+/// Screen height
 public let screenH: CGFloat = UIScreen.main.bounds.height
 
 
-// MARK: - 扩展UIView
+// MARK: - Extend UIView
 extension UIView {
 
-    /// 视图的X值
+    /// View's X value
     var LeftX: CGFloat {
         get {
             return self.frame.origin.x
         }
     }
-    /// 视图右边的X值
+    /// The X value to the right of the view
     var RightX: CGFloat {
         get {
             return self.frame.origin.x + self.bounds.width
         }
     }
-    /// 视图顶部Y值
+    /// View top Y value
     var TopY: CGFloat {
         get {
             return self.frame.origin.y
         }
     }
-    /// 视图底部Y值
+    /// View bottom Y value
     var BottomY: CGFloat {
         get {
             return self.frame.origin.y + self.bounds.height
         }
     }
 
-    /// 视图的宽度
+    /// Width of the view
     var Width: CGFloat {
         get {
             return self.bounds.width
         }
     }
 
-    /// 视图的高度
+    /// Height of view
     var Height: CGFloat {
         get {
             return self.bounds.height

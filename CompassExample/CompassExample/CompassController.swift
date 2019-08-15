@@ -10,17 +10,17 @@ import UIKit
 import CoreLocation
 import Contacts
 
-/// 指南针控制器
+/// Compass controller
 class CompassController: UIViewController {
 
     // MARK: - Lazy Loading View
     
-    // 位置信息
-    /// 定位管理器
+    // location information
+    /// Location manager
     private lazy var locationManager : CLLocationManager = CLLocationManager()
     private lazy var currLocation: CLLocation = CLLocation()
     
-    /// 刻度视图
+    /// Scale view
     fileprivate lazy var dScaView: DegreeScaleView = {
         let viewF = CGRect(x: 0, y: 0, width: view.frame.size.width - 30, height: view.frame.size.width - 30)
         let scaleV = DegreeScaleView(frame: viewF)
@@ -29,7 +29,7 @@ class CompassController: UIViewController {
         return scaleV
     }()
     
-    /// 角度label
+    /// Angle label
     private lazy var angleLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: dScaView.frame.maxY, width: view.frame.size.width / 2, height: 100))
         label.font = UIFont.systemFont(ofSize: 60)
@@ -38,7 +38,7 @@ class CompassController: UIViewController {
         return label
     }()
     
-    /// 方向label
+    /// Direction label
     private lazy var directionLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: view.frame.size.width / 2, y: angleLabel.frame.origin.y, width: view.frame.width / 2, height: 25))
         label.font = UIFont.systemFont(ofSize: 15)
@@ -46,7 +46,7 @@ class CompassController: UIViewController {
         return label
     }()
 
-    /// 地理位置Label
+    /// Location Label
     private lazy var positionLabel: UILabel = {
         let viewF = CGRect(x: view.frame.size.width / 2, y: directionLabel.frame.maxY, width: view.frame.size.width / 2, height: directionLabel.Height * 2)
         let label = UILabel(frame: viewF)
@@ -56,7 +56,7 @@ class CompassController: UIViewController {
         return label
     }()
     
-    /// 经纬度Label
+    /// Latitude and longitude Label
     private lazy var latitudeAndLongitudeLabel: UILabel = {
         let viewF = CGRect(x: 0, y: angleLabel.frame.maxY, width: view.frame.size.width, height: 30)
         let label = UILabel(frame: viewF)
@@ -66,7 +66,7 @@ class CompassController: UIViewController {
         return label
     }()
     
-    /// 海拔高度Label
+    /// Altitude Label
     private lazy var altitudeLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: latitudeAndLongitudeLabel.frame.maxY, width: view.frame.maxX, height: 30))
         label.font = UIFont.systemFont(ofSize: 16)
@@ -75,10 +75,10 @@ class CompassController: UIViewController {
         return label
     }()
     
-    // MARK: - 销毁(destroy)
-    // deinit() 类反初始化（析构方法）
+    // MARK: - Destroy
+    // deinit() Class deinitialization (destruction method)
     deinit {
-        locationManager.stopUpdatingHeading()   // 停止获得航向数据，省电
+        locationManager.stopUpdatingHeading()   // Stop obtaining heading data, save power
         locationManager.delegate = nil
     }
     
@@ -94,13 +94,13 @@ class CompassController: UIViewController {
 // MARK: - Custom Method
 extension CompassController {
     
-    /// 配置UI界面
+    /// Configuring the UI interface
     private func configUI() {
         view.backgroundColor = .black
         addSub()
     }
     
-    /// 添加视图
+    /// Add view
     private func addSub() {
         view.addSubview(dScaView)
         view.addSubview(angleLabel)
@@ -110,89 +110,90 @@ extension CompassController {
         view.addSubview(altitudeLabel)
     }
     
-    /// 创建初始化定位装置
+    /// Create an initial positioning device
     private func createLocationManager() {
         
         /**
-         * 定位信息
+         * Location information
          *
-         * 经度：currLocation.coordinate.longitude
-         * 纬度：currLocation.coordinate.latitude
-         * 海拔：currLocation.altitude
-         * 方向：currLocation.course
-         * 速度：currLocation.speed
+         * longitude：currLocation.coordinate.longitude
+         * latitude：currLocation.coordinate.latitude
+         * altitude：currLocation.altitude
+         * direction：currLocation.course
+         * speed：currLocation.speed
          *  ……
          */
         
         locationManager.delegate = self
         
-        // 位置定位管理器更新频率. 定位要求的精度越高，distanceFilter属性的值越小.
-        // 它指设备（水平或垂直）移动多少米后才将另一个更新发送给委托。
+        // The location location manager updates the frequency. The higher the accuracy of the location requirement, the
+        // smaller the value of the distanceFilter attribute. It refers to how many meters the device (horizontal or vertical)
+        // moves before sending another update to the delegate.
         locationManager.distanceFilter = 0
         
-        // 设置定位的精准度. 越精确，耗电量越高.
-        // kCLLocationAccuracyBestForNavigation: 精度最高，一般用于导航.
+        // Set the accuracy of positioning. The more accurate, the higher the power consumption.
+        // kCLLocationAccuracyBestForNavigation: The highest precision, generally used for navigation.
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         
-        /** 发送授权申请 **/
-        // 总是授权: 允许在前台获取用户位置的授权
+        /** Send authorization request **/
+        // Always Authorized: Allows authorization to obtain user location in the foreground
         //locationManager.requestAlwaysAuthorization()
-        // 当使用时: 请求授权
+        // When used: Request authorization
         locationManager.requestWhenInUseAuthorization()
         
-        // 允许后台定位更新,进入后台后有蓝条闪动
+        // Allow background positioning update, blue bar flashes after entering the background
         locationManager.allowsBackgroundLocationUpdates = true
 
-        // 判断定位设备是否允许使用定位服务 和 是否获得导航数据
+        // Determine if the positioning device allows the use of location services and whether to obtain navigation data
         if CLLocationManager.locationServicesEnabled() && CLLocationManager.headingAvailable() {
-            locationManager.startUpdatingLocation()     // 开始定位服务
-            locationManager.startUpdatingHeading()      // 开始获取设备朝向
-            print("定位开始")
+            locationManager.startUpdatingLocation()     // Start location service
+            locationManager.startUpdatingHeading()      // Start getting device orientation
+            print("Start of positioning")
         }else {
-            print("不能获得航向数据")
+            print("Cannot obtain heading data")
         }
     }
     
-    /// 更新当前手机（摄像头)朝向方向
+    /// Update the current mobile phone (camera) orientation
     ///
-    /// - Parameter newHeading: 朝向
+    /// - Parameter newHeading: Oriented
     private func update(_ newHeading: CLHeading) {
         
-        /// 朝向
+        /// Oriented
         let theHeading: CLLocationDirection = newHeading.magneticHeading > 0 ? newHeading.magneticHeading : newHeading.trueHeading
         
-        /// 角度
+        /// angle
         let angle = Int(theHeading)
         
         switch angle {
         case 0:
-            directionLabel.text = "北"
+            directionLabel.text = "N"
         case 90:
-            directionLabel.text = "东"
+            directionLabel.text = "E"
         case 180:
-            directionLabel.text = "南"
+            directionLabel.text = "S"
         case 270:
-            directionLabel.text = "西"
+            directionLabel.text = "W"
         default:
             break
         }
         
         if angle > 0 && angle < 90 {
-            directionLabel.text = "东北"
+            directionLabel.text = "NE"
         }else if angle > 90 && angle < 180 {
-            directionLabel.text = "东南"
+            directionLabel.text = "SE"
         }else if angle > 180 && angle < 270 {
-            directionLabel.text = "西南"
+            directionLabel.text = "SW"
         }else if angle > 270 {
-            directionLabel.text = "西北"
+            directionLabel.text = "NW"
         }
     }
     
-    /// 获取当前设备朝向(磁北方向)
+    /// Get the current device orientation (magnetic north direction)
     ///
     /// - Parameters:
-    ///   - heading: 朝向
-    ///   - orientation: 设备方向
+    ///   - heading: Oriented
+    ///   - orientation: Equipment direction
     /// - Returns: Float
     private func heading(_ heading: Float, fromOrirntation orientation: UIDeviceOrientation) -> Float {
         
@@ -223,97 +224,97 @@ extension CompassController {
 // MARK: - CLLocationManagerDelegate
 extension CompassController: CLLocationManagerDelegate {
     
-    //与导航有关方法
+    // Navigation related methods
     
-    // 定位成功之后的回调方法，只要位置改变，就会调用这个方法
+    // Callback method after successful positioning, as long as the position changes, this method will be called
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
        
-        // 获取最新的坐标
+        // Get the latest coordinates
         currLocation = locations.last!
         
-        /// 经度
+        /// longitude
         let longitudeStr = String(format: "%3.2f", currLocation.coordinate.longitude)
         
-        /// 纬度
+        /// latitude
         let latitudeStr = String(format: "%3.2f", currLocation.coordinate.latitude)
         
-        /// 海拔
+        /// altitude
         let altitudeStr = "\(Int(currLocation.altitude))"
         
         
-        /***** 1.处理经度 *****/
-        /// 字符串范围截取
+        /***** 1. Processing longitude *****/
+        /// String range interception
         let stringRange = longitudeStr.range(of: ".")
         
-        /// 整数: 根据某个字符串截取. 截取小数点前字符
+        /// Integer: Intercept according to a string. Intercept the character before the decimal point
         let wholeNumber = longitudeStr.prefix(upTo: stringRange!.lowerBound)
         
-        /// 小数点后面部分 截取小数点后字符
+        /// After the decimal point, the character after the decimal point is truncated
         let decimalPointBehind = longitudeStr.suffix(from: stringRange!.upperBound)
         
-        /// 拼接度数(°)后的整数
+        /// Integer after splicing degree (°)
         let newWholeNumber = wholeNumber + "°"
         
-        /// 拼接(')后的小数后面部分
+        /// After the splicing (')
         let newDecimalPointBehind = decimalPointBehind + "'"
         
-        /// 新拼接的东经度
+        /// New stitching east longitude
         let newLongitudeStr = newWholeNumber + newDecimalPointBehind
         
-        /***** 2.处理纬度 *****/
-        /// 字符串范围截取
+        /***** 2. Processing latitude *****/
+        /// String range interception
         let stringRange2 = latitudeStr.range(of: ".")
         
-        /// 整数: 根据某个字符串截取. 截取小数点前字符
+        /// Integer: Intercept according to a string. Intercept the character before the decimal point
         let wholeNumber2 = latitudeStr.prefix(upTo: stringRange2!.lowerBound)
         
-        /// 小数点后面部分 截取小数点后字符
+        /// After the decimal point, the character after the decimal point is truncated
         let decimalPointBehind2 = latitudeStr.suffix(from: stringRange2!.upperBound)
         
-        /// 拼接度数(°)后的整数
+        /// Integer after splicing degree (°)
         let newWholeNumber2 = wholeNumber2 + "°"
         
-        /// 拼接(')后的小数后面部分
+        /// After the splicing (')
         let newDecimalPointBehind2 = decimalPointBehind2 + "'"
         
-        /// 新拼接的北纬度
+        /// New stitching north latitude
         let newlatitudeStr = newWholeNumber2 + newDecimalPointBehind2
         
-//        latitudeAndLongitudeLabel.text = "北纬：\(latitudeStr)  东经：\(longitudeStr)"
+//        latitudeAndLongitudeLabel.text = "North latitude: \(latitudeStr) East:\(longitudeStr)"
         
-        latitudeAndLongitudeLabel.text = "北纬：\(newlatitudeStr)  东经：\(newLongitudeStr)"
+        latitudeAndLongitudeLabel.text = "north latitude：\(newlatitudeStr)  East longitude：\(newLongitudeStr)"
         
-        altitudeLabel.text = "海拔：\(altitudeStr) 米"
+        altitudeLabel.text = "altitude：\(altitudeStr) M"
 
-        // 反地理编码
-        /// 创建CLGeocoder对象
+        // Anti-geographic coding
+        /// Create a CLGeocoder object
         let geocoder = CLGeocoder()
         
-        /*** 反向地理编码请求 ***/
+        /*** Reverse geocoding request ***/
         
-        // 根据给的经纬度地址反向解析,得到字符串地址.
+        // According to the given latitude and longitude address reverse parsing, get the string address.
         geocoder.reverseGeocodeLocation(currLocation) { (placemarks, error) in
             
             guard let placeM = placemarks else { return }
-            // 如果解析成功执行以下代码
+            // If the parsing succeeds, execute the following code
             guard placeM.count > 0 else { return }
-            /* placemark: 包含所有位置信息的结构体 */
-            // 包含区，街道等信息的地标对象
+            /* placemark: Structure containing all location information */
+            // Landmark objects containing information such as districts, streets, etc.
             let placemark: CLPlacemark = placeM[0]
             
-            /// 存放街道,省市等信息
+            /// Store streets, provinces and other information
             let addressDictionary = placemark.postalAddress
             
-            /// 国家
+            /// country
             guard let country = addressDictionary?.country else { return }
             
-            /// 城市
+            /// city
             guard let city = addressDictionary?.city else { return }
             
-            /// 子地点
+            /// Sub-location
             guard let subLocality = addressDictionary?.subLocality else { return }
             
-            /// 街道
+            /// street
             guard let street = addressDictionary?.street else { return }
        
             self.positionLabel.text = "\(country)\n\(city) \(subLocality) \(street)"
@@ -321,70 +322,71 @@ extension CompassController: CLLocationManagerDelegate {
  
     }
 
-    // 获得设备地理和地磁朝向数据，从而转动地理刻度表以及表上的文字标注
+    // Obtain the device geography and geomagnetic orientation data to rotate the geoscale and text labels on the table
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         /*
-            trueHeading     : 真北方向
-            magneticHeading : 磁北方向
+            trueHeading     : True north direction
+            magneticHeading : Magnetic north direction
          */
-        /// 获得当前设备
+        /// Get current device
         let device = UIDevice.current
         
-        // 1.判断当前磁力计的角度是否有效(如果此值小于0,代表角度无效)越小越精确
+        // 1. Determine whether the current magnetometer's angle is valid (if this value is less than 0, it means the
+        // angle is invalid), the smaller the more accurate
         if newHeading.headingAccuracy > 0 {
             
-            // 2.获取当前设备朝向(磁北方向)数据
+            // 2. Get the current device orientation (magnetic north direction) data
             let magneticHeading: Float = heading(Float(newHeading.magneticHeading), fromOrirntation: device.orientation)
             
-            // 地理航向数据: trueHeading
+            // Geographic heading data: trueHeading
             //let trueHeading: Float = heading(Float(newHeading.trueHeading), fromOrirntation: device.orientation)
          
-            /// 地磁北方向
+            /// Geomagnetic north direction
             let headi: Float = -1.0 * Float.pi * Float(newHeading.magneticHeading) / 180.0
-            // 设置角度label文字
+            // Set the angle label text
             angleLabel.text = "\(Int(magneticHeading))°"
 
-            // 3.旋转变换
+            // 3. Rotation transformation
             dScaView.resetDirection(CGFloat(headi))
             
-            // 4.当前手机（摄像头)朝向方向
+            // 4. The current mobile phone (camera) is oriented
             update(newHeading)
         }
     }
    
-    // 判断设备是否需要校验，受到外来磁场干扰时
+    // Determine whether the device needs to be verified and is subject to interference from external magnetic fields.
     func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
         return true
     }
     
-    // 定位代理失败回调
+    // Location agent failure callback
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("定位失败....\(error)")
+        print("Location failed....\(error)")
     }
     
-    /// 如果授权状态发生变化时,调用
+    /// Called if the authorization status changes
     ///
     /// - Parameters:
-    ///   - manager: 定位管理器
-    ///   - status: 当前的授权状态
+    ///   - manager: Location manager
+    ///   - status: Current authorization status
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
  
         switch status {
         case .notDetermined:
-            print("用户未决定")
+            print("User has not decided")
         case .restricted:
-            print("受限制")
+            print("Restricted")
         case .denied:
-            // 判断当前设备是否支持定位, 并且定位服务是否开启
+            // Determine whether the current device supports positioning and whether the positioning service is enabled.
             if CLLocationManager.locationServicesEnabled() {
-                print("定位开启,被拒绝")
+                print("Positioning turned on, rejected")
             }else {
-                print("定位服务关闭")
+                print("Location service is down")
             }
         case .authorizedAlways:
-            print("前,后台定位授权")
+            print("Front, background positioning authorization")
         case .authorizedWhenInUse:
-            print("前台定位授权")
+            print("Front-end location authorization")
         }
     }
     

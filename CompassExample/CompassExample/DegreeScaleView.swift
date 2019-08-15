@@ -8,13 +8,14 @@
 
 import UIKit
 
-/// 刻度视图
+/// Scale view
 class DegreeScaleView: UIView {
     
-    /// 背景视图
+    /// Background view
+
     private lazy var backgroundView = UIView()
     
-    /// 水平视图
+    /// Horizontal view
     private lazy var levelView: UIView = {
         let levelView = UIView(frame: CGRect(x: 0, y: 0, width: self.frame.size.width / 2 / 2, height: 1))
         levelView.center = CGPoint(x: self.frame.size.width / 2, y: self.frame.size.height / 2)
@@ -22,7 +23,7 @@ class DegreeScaleView: UIView {
         return levelView
     }()
     
-    /// 垂直视图
+    /// Vertical view
     private lazy var verticalView: UIView = {
         let verticalView = UIView(frame: CGRect(x: 0, y: 0, width: 1, height: self.frame.size.height / 2 / 2))
         verticalView.center = CGPoint(x: self.frame.size.width / 2, y: self.frame.size.height / 2)
@@ -30,7 +31,7 @@ class DegreeScaleView: UIView {
         return verticalView
     }()
     
-    /// 指针视图
+    /// Pointer view
     private lazy var lineView: UIView = {
         let lineView = UIView(frame: CGRect(x: self.frame.size.width / 2 - 1.5, y: self.frame.size.height/2 - (self.frame.size.width/2 - 50) - 50, width: 3, height: 60))
         lineView.backgroundColor = .white
@@ -56,41 +57,41 @@ class DegreeScaleView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /// 配置刻度表
+    /// Configuration scale
     private func configScaleDial() {
 
-        /// 360度
+        /// 360
         let degree_360: CGFloat = CGFloat.pi
         
-        /// 180度
+        /// 180
         let degree_180: CGFloat = degree_360 / 2
         
-        /// 角度
+        /// angle
         let angle: CGFloat = degree_360 / 90
         
-        /// 方向数组
-        let directionArray = ["北", "东", "南", "西"]
+        /// Direction array
+        let directionArray = ["N", "E", "S", "W"]
         
-        /// 点
+        /// point
         let po = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
         
-        //画圆环，每隔2°画一个弧线，总共180条
+        // Draw a circle, draw an arc every 2°, a total of 180
         for i in 0 ..< 180 {
             
-            /// 开始角度
+            /// Starting angle
             let startAngle: CGFloat = -(degree_180 + degree_360 / 180 / 2) + angle * CGFloat(i)
   
-            /// 结束角度
+            /// End angle
             let endAngle: CGFloat = startAngle + angle / 2
             
-            // 创建一个路径对象
+            // Create a path object
             let bezPath = UIBezierPath(arcCenter: po, radius: frame.size.width / 2 - 50, startAngle: startAngle, endAngle: endAngle, clockwise: true)
             
-            /// 形变图层
+            /// Deformation layer
             let shapeLayer = CAShapeLayer()
             
             if i % 15 == 0 {
-                // 设置描边色
+                // Set the stroke color
                 shapeLayer.strokeColor = UIColor.white.cgColor
                 shapeLayer.lineWidth = 20
             }else {
@@ -98,12 +99,12 @@ class DegreeScaleView: UIView {
                 shapeLayer.lineWidth = 20
             }
             shapeLayer.path = bezPath.cgPath
-            shapeLayer.fillColor = UIColor.clear.cgColor    // 设置填充路径色
+            shapeLayer.fillColor = UIColor.clear.cgColor    // Set the fill path color
             backgroundView.layer.addSublayer(shapeLayer)
             
-            // 刻度的标注
+            // Marking of scale
             if i % 15 == 0 {
-                //刻度的标注 0 30 60...
+                // Marking of scale 0 30 60...
                 var tickText = "\(i * 2)"
                 
                 let textAngle: CGFloat = startAngle + (endAngle - startAngle) / 2
@@ -119,7 +120,7 @@ class DegreeScaleView: UIView {
                 label.textAlignment = .center
                 backgroundView.addSubview(label)
                 
-                if i % 45 == 0 {    //北 东 南 西
+                if i % 45 == 0 {    // North east south west
                     
                     tickText = directionArray[i / 45]
                     
@@ -133,7 +134,7 @@ class DegreeScaleView: UIView {
                     label2.textAlignment = .center
                     
                     if tickText == "北" {
-                        /// 红色箭头
+                        /// Red Arrow
                         let redArrowLabel = UILabel(frame: CGRect(x: point.x, y: point.y, width: 8, height: 8))
                         redArrowLabel.center = CGPoint(x: point.x, y: point.y + 10)
                         redArrowLabel.clipsToBounds = true
@@ -150,12 +151,12 @@ class DegreeScaleView: UIView {
     
     
     
-    /// 计算中心坐标
+    /// Calculation center coordinates
     ///
     /// - Parameters:
-    ///   - center: 中心点
-    ///   - angle: 角度
-    ///   - scale: 刻度
+    ///   - center: Center point
+    ///   - angle: angle
+    ///   - scale: Scale
     /// - Returns: CGPoint
     private func calculateTextPositon(withArcCenter center: CGPoint, andAngle angle: CGFloat, andScale scale: CGFloat) -> CGPoint {
         let x = (self.frame.size.width / 2 - 50) * scale * CGFloat(cosf(Float(angle)))
@@ -163,9 +164,9 @@ class DegreeScaleView: UIView {
         return CGPoint(x: center.x + x, y: center.y + y)
     }
     
-    /// 旋转重置刻度标志的方向
+    /// Rotate the direction of the reset scale mark
     ///
-    /// - Parameter heading: 航向
+    /// - Parameter heading: course
     public func resetDirection(_ heading: CGFloat) {
         
         backgroundView.transform = CGAffineTransform(rotationAngle: heading)
